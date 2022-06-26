@@ -4,7 +4,7 @@ module.exports = (app) => {
   const FileController = require("../controllers/files.controller");
   app.post(
     "/add-file",
-
+    authJwt.verifyTutor,
     upload.single("file"),
     FileController.uploadFile
   );
