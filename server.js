@@ -1,9 +1,10 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const app = express();
 app.use(express.json());
-app.use(express.json());
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 const httpServer = require('http').createServer(app);
 let PORT;
@@ -28,3 +29,4 @@ httpServer.listen(PORT, () => {
 });
 require('./app/routes/user.routes')(app);
 require('./app/routes/roles.routes')(app);
+require('./app/routes/files.routes')(app);
