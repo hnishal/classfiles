@@ -1,0 +1,1 @@
+const enrollmentModel = require('../models/enrollment.model');
