@@ -1,5 +1,7 @@
+const authJwt = require("../middleware/auth.middleware");
+
 module.exports = (app) => {
-    const ClassController = require('../controllers/class.controller');
-    app.post('/create-class', ClassController.newclass);
-    app.delete('/remove-class', ClassController.removeclass);
-}
+  const ClassController = require("../controllers/class.controller");
+  app.post("/create-class", authJwt.verifyTutor, ClassController.newclass);
+  app.delete("/remove-class", authJwt.verifyTutor, ClassController.removeclass);
+};
