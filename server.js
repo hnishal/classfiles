@@ -2,10 +2,25 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
+const formidable = require("express-formidable");
+const bodyParser = require("body-parser");
+var multer = require("multer");
+var upload = multer();
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
+app.use(formidable());
+
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+
+// parse requests of content-type - application/json
+app.use(bodyParser.json());
+// app.use(upload.array());
 const httpServer = require("http").createServer(app);
 let PORT;
 process.env.STATUS === "production"

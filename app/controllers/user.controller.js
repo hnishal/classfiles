@@ -2,6 +2,8 @@ const UserModel = require("../models/user.model");
 const RoleModel = require("../models/roles.model");
 const bcrypt = require("bcrypt");
 const authJwt = require("../middleware/auth.middleware");
+const ClassModel = require("../models/class.model");
+const enrollmentModel = require("../models/enrollment.model");
 
 exports.newUser = async (req, res) => {
   if (!req.body) {
@@ -109,4 +111,43 @@ exports.loginUser = async (req, res) => {
     console.log(error);
     res.status(500).send({ message: "Something went wrong!" });
   }
+};
+
+exports.getClasses = async (req, res) => {
+  if (!req.body) {
+    console.log("empty body!");
+    return res.status(404).send({ message: "Request body cannot be empty!" });
+  }
+  console.log("x-access-token: " + req.headers["x-access-token"]);
+  var decoded = await authJwt.getDecodedJwt(req.headers["x-access-token"]);
+  console.log("decoded", decoded);
+  if (!decoded) {
+    console.log("here 1");
+    res.status(400).send({ message: "Something went wrong!" });
+    return;
+  }
+
+  var role = await RoleModel.findOne({ name: decoded.userRole });
+
+  if (!role) {
+    console.log("here 2");
+
+    res.status(400).send({ message: "Something went wrong!" });
+    return;
+  }
+  var user = await UserModel.findOne({ username: decoded.username });
+  if (!user) {
+    console.log("here 3");
+
+    res.status(400).send({ message: "Something went wrong!" });
+    return;
+  }
+  var classes;
+  if (role.writePermissions) {
+    classes = await ClassModel.find({ tutor: user._id });
+  } else {
+    classes = await enrollmentModel.find({ userid: user._id });
+  }
+  if (classes) res.status(201).json({ classes: classes });
+  else res.status(201).send({ message: "No classes found!" });
 };

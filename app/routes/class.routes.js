@@ -5,4 +5,5 @@ module.exports = (app) => {
   app.post("/create-class", authJwt.verifyTutor, ClassController.newClass);
   app.delete("/remove-class", authJwt.verifyTutor, ClassController.removeClass);
   app.put("/update-class", authJwt.verifyTutor, ClassController.updateClass);
+  // app.post("/get-files", authJwt.verifyToken, ClassController.getFiles);
 };

@@ -44,25 +44,34 @@ var verifyTutor = async (req, res, next) => {
       });
     }
     if (decoded) {
-      var role = await RoleModel.findOne({ name: decoded.userRole });
-      if (!role) {
-        res.status(404).send({ message: "Role does not exist" });
-        return;
-      }
-      if (!role.writePermissions) {
+      try {
+        var role = await RoleModel.findOne({ name: decoded.userRole });
+        if (!role) {
+          res.status(404).send({ message: "Role does not exist" });
+          return;
+        }
+        if (!role.writePermissions) {
+          res.status(401).send({
+            message: "Unauthorized!",
+          });
+          return;
+        }
+
+        const { username } = req.fields ? req.fields : req.body;
+        console.log("User: ", username);
+        if (username.toLowerCase() == decoded.username) {
+          next();
+        } else {
+          console.log(username + decoded.username);
+          return res.status(401).send({
+            message: "Data Mismatch!",
+          });
+        }
+      } catch (err) {
         res.status(401).send({
-          message: "Unauthorized!",
+          message: "Something went wrong!",
         });
         return;
-      }
-      const { username } = req.body;
-      if (username.toLowerCase() == decoded.username) {
-        next();
-      } else {
-        console.log(username + decoded.username);
-        return res.status(401).send({
-          message: "Data Mismatch!",
-        });
       }
     } else {
       res.status(401).send({
@@ -81,9 +90,24 @@ var createJwt = (obj) => {
   });
 };
 
+var getDecodedJwt = async (token) => {
+  var data;
+  jwt.verify(token, config.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(401).send({
+        message: "Unauthorized!",
+      });
+    }
+    console.log(JSON.stringify(decoded));
+    data = decoded;
+  });
+  return data;
+};
+
 const authJwt = {
   verifyToken: verifyToken,
   verifyTutor: verifyTutor,
   createJwt: createJwt,
+  getDecodedJwt: getDecodedJwt,
 };
 module.exports = authJwt;
