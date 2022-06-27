@@ -1,14 +1,14 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const cors = require("cors");
 const { default: mongoose } = require("mongoose");
 const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
-const httpServer = require('http').createServer(app);
+const httpServer = require("http").createServer(app);
 let PORT;
-process.env.STATUS === 'production'
+process.env.STATUS === "production"
   ? (PORT = process.env.PROD_PORT)
   : (PORT = process.env.DEV_PORT);
 
@@ -27,6 +27,8 @@ mongoose
 httpServer.listen(PORT, () => {
   console.log(`Server in ${process.env.STATUS} mode, listening on *:${PORT}`);
 });
-require('./app/routes/user.routes')(app);
-require('./app/routes/roles.routes')(app);
-require('./app/routes/files.routes')(app);
+require("./app/routes/user.routes")(app);
+require("./app/routes/roles.routes")(app);
+require("./app/routes/files.routes")(app);
+require("./app/routes/class.routes")(app);
+require("./app/routes/enrollment.routes")(app);
